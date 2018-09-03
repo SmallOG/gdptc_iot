@@ -1,0 +1,10 @@
+# mac:
+.DS_Store
+
+# tp
+/runtime/*
+/runtime/*
+/public/uploads/*
+database.php
+config.php
+/db*

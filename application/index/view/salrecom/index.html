@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
+		<meta name="apple-mobile-web-app-capable" content="yes"/>
+		<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+		<meta name="format-detection" content="telephone=no"/>
+		<title>{$row.title}</title>
+		<style>
+				html{font-family: "微软雅黑";}
+				body{width: 100%;}
+				*{margin:0;padding:0;font-size: 0.6rem;}
+				img{width:100%;}
+				li{list-style: none;}
+				a{text-decoration: none;}
+				.clearfix:after {
+					content:"";
+					display: block;
+					clear:both;
+				}
+				.contain .part1{height: 15rem;width:100%;display: block;position: relative;}
+				.contain .part1 ul{height:15rem;position: relative;}
+				.contain .part1 ul li {position: absolute;left: 0;top:0;opacity: 0;filter:alpha(opacity:0);text-align: center;width: 100%;}
+				.contain .part1 ul li a{width: 100%;height: 15rem;text-align: center;display: block;}
+				.contain .part1 ul li a img{height: 15rem;display: block;}
+				.contain .part1 ol { position: absolute; bottom: 1rem; z-index: 1; left: 50%;}
+				.contain .part1 ol li { float: left; margin-right: 0.75rem; display: inline; cursor: pointer;  width:0.6rem;height:0.6rem; color: white; font-size: 0.6rem;border-radius: 100%;background-color: #ff4c40; }
+				.contain .part1 ol .ac1 {background-color: #333333;}
+				.contain .part1 .moveBtn { width:1.5rem; height:3rem; line-height:3rem; font-size:1.5rem;color: #fff; text-align: center;background:rgba(0,0,0,.15);  position: absolute; top: 50%; margin-top:-40px; z-index: 2;opacity: 0;filter:alpha(opacity:0);}
+				.contain .part1 .prev { left: 10%; }
+				.contain .part1 .next { right: 10%; }
+				.contain .part2 img{height: 2rem;width:100%;display: block;}
+				.contain .part2{position: relative;}
+				.contain .part2 .daojishi{position: absolute;right: 0.4rem;top:0.9rem;}
+				.contain .part2 .daojishi span{line-height: 0.8rem; font-size: 0.55rem;text-align:center;color:white; float: left;width: 0.8rem;height: 0.8rem;border-radius: 0.1rem;background-color: #552c0e;}
+				.contain .part2 .daojishi b{float: left;color: #552c0e;}
+				.contain .part3{width: 100%;}
+				.contain .part3 .one {height: 2rem;width: 100%;line-height: 2.4rem;}
+				.contain .part3 .one span{float: left;width: 2rem;height: 0.7rem;background-color: #fc4966;color: white;font-size: 0.6rem;text-align: center;line-height: 0.7rem;margin-top: 0.85rem;margin-left: 0.65rem;margin-right: 0.65rem;}
+				.contain .part3 .one strong{font-size: 0.7rem;font-weight: normal;}
+				.contain .part3 .two{height: 0.7rem;width: 100%;padding-bottom: 0.5rem;}
+				.contain .part3 .two span{float: left;height: 0.8rem;line-height: 0.8rem;display: block;}
+				.contain .part3 .two .span1{color: #fe0000;font-size: 0.5rem;font-weight: bold;margin-left: 0.75rem;}
+				.contain .part3 .two .span2{color: #fe0000;font-size: 0.8rem;font-weight: bold;margin-left: 0.4rem;margin-right: 0.6rem;}
+				.contain .part3 .two .span3{color: #999;margin-right: 0.85rem;}
+				.contain .part3 .two .span4{height: 0.8rem;width: 2.3rem;padding-right:0.35rem;background: url("__PUBLIC__/salrecom/img/bg2.jpg")no-repeat; background-size:cover; color: #ff994f;font-size: 0.6rem;text-align: right;line-height: 0.85rem;}
+				.contain .part3 .three{height: 0.65rem;line-height: 0.65rem;padding-bottom: 1rem;}
+				.contain .part3 .three span{text-align: center; float: left;color: #fe4a65;border: 1px solid #fe4a65;width: 1.4rem;height: 0.65rem;margin-left: 0.3rem;}
+				.contain .part3 .four{height: 1.5rem;width: 100%;line-height: 1.5rem;}
+				.contain .part3 .four img{float: left;display: block;width: 1.5rem;margin-left: 0.6rem;margin-right: 0.5rem;}
+				.contain .part3 .four .xiaobian{color: #999;float: left;font-size: 0.6rem;}
+				.contain .part3 .four .fabu{color: #999;float: right;margin-right: 0.6rem;font-size: 0.6rem;}
+				.contain .part3 .five{height: 2rem;padding-left: 0.3rem;font-size: 0.7rem;color:#333;font-weight: bold;line-height: 2rem;}
+				.contain .part3 .six{ height: 0.6rem;line-height: 0.6rem;font-size: 0.5rem;color: #666;padding-left: 0.3rem;padding-bottom: 0.65rem;}
+				.contain .part3 .six span{color: #f52342;font-weight: bold;font-size: 0.6rem;}
+				.contain .part4{ height: 1.8rem;width: 100%;background-color: #fe4a65;text-align: center;line-height: 1.8rem;font-size: 0.9rem;color: white;}
+			</style>
+		<script src="__PUBLIC__/salrecom/js/jquery.js"></script>
+		<script>
+				(function (doc, win) {
+					var docEl = doc.documentElement,
+						resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+						recalc = function () {
+							var tall_height_em ;
+							var diff_em ;
+							var diff_h ;
+							var font_size ;
+							var clientWidth = docEl.clientWidth;
+							var clientHeight = docEl.clientHeight;
+							if (!clientWidth) return;
+							if (clientWidth > 750) clientWidth = 750;//这里限制最大的宽度尺寸，从而实现PC端的两边留白等
+							font_size = 20 * (clientWidth / 320);
+							docEl.style.fontSize = font_size + 'px';
+		
+							diff_h = clientHeight - $(".contain").height();
+
+							tall_height_em = parseInt( clientHeight / font_size  );
+							diff_em = parseInt( ( diff_h+$("#banner").height() ) / font_size  );
+
+							if( diff_em/tall_height_em < 0.2 ){
+								diff_em = parseInt( tall_height_em*0.2 );
+							}else if( diff_em/tall_height_em > 0.6 ){
+								diff_em = parseInt( tall_height_em*0.6 );
+							}
+								 
+							$( ".contain .part1" ).css( {"height": diff_em+"rem"} );
+							$( ".contain .part1 ul" ).css( {"height": diff_em+"rem"} );
+							$( ".contain .part1 ul li a" ).css( {"height": diff_em+"rem"} );
+							$( ".contain .part1 ul li a img" ).css( {"height": diff_em+"rem"} );
+		
+						};
+		
+					if (!doc.addEventListener) return;
+					win.addEventListener(resizeEvt, recalc, false);
+					doc.addEventListener('DOMContentLoaded', recalc, false);
+				})(document, window);
+			</script>
+		<script>
+				//设置截止时间
+				var endDate = new Date();
+				endDate.setHours(  endDate.getHours() + 2 );
+
+				$(function () {
+					function daojishi() {
+		
+						var date = new Date();
+						//获取当前时间
+						var nowTime = date.getTime();
+						
+						var endTime = endDate.getTime();
+						//时间差
+						var letTime = endTime - nowTime;
+		
+		
+						var d, h, m, s;
+						if (endTime >= 0) {
+							d = Math.floor(letTime / 1000 / 60 / 60 / 24);
+							h = Math.floor(letTime / 1000 / 60 / 60 % 24) > 9 ? Math.floor(letTime / 1000 / 60 / 60 % 24) : "0" + (Math.floor(letTime / 1000 / 60 / 60 % 24)).toString();
+							m = Math.floor(letTime / 1000 / 60 % 60) > 9 ? Math.floor(letTime / 1000 / 60 % 60) : "0" + (Math.floor(letTime / 1000 / 60 % 60)).toString();
+							s = Math.floor(letTime / 1000 % 60) > 9 ? Math.floor(letTime / 1000 % 60) : "0" + (Math.floor(letTime / 1000 % 60)).toString();
+		
+							$(".daojishi span:eq(0)").html(d + "天");
+							$(".daojishi span:eq(1)").html(h);
+							$(".daojishi span:eq(2)").html(m)
+							$(".daojishi span:eq(3)").html(s)
+		
+						}
+		
+					}
+		
+					setInterval(daojishi, 1000)
+		
+				})
+			</script>
+		<script>
+				$(function () {
+					var oBanner = document.getElementById("banner");
+					function getStyle(obj, styleName) {
+						var value = obj.currentStyle ? obj.currentStyle[styleName] : getComputedStyle(obj, false)[styleName];
+						return styleName == 'opacity' ? value = Math.round(parseFloat(value) * 100) : value = parseInt(value);
+					}
+					//对象 运动模式 移动时间 回调
+					function animate(obj, moveJson, speed, fn) {
+						var prd_speed = { //预定义 predefine
+							veryslow: 5000,
+							slow: 2000,
+							normal: 1000,
+							fast: 700,
+							veryfast: 300
+						};
+		
+						//如果输入预定速度的字符串，就进行转换
+						if (speed) {
+							if (typeof stopTime == 'string') speed = prd_speed[speed];
+						} else {
+							speed = prd_speed.normal;
+						}
+		
+						//-----------------------------------------------------
+						var start = {};//起点json
+						var dis = {};//距离json
+		
+						for (var key in moveJson) {
+							start[key] = getStyle(obj, key);
+							dis[key] = moveJson[key] - start[key];//距离 distance
+						}
+		
+						//分段
+						var count = parseInt(speed / 30);////次数
+						var n = 0;//步进
+		
+						//定时器---------------------------------------------
+						clearInterval(obj.timer);//使用对象属性，定义计时器变量
+						obj.timer = setInterval(function () {
+							n++;
+							for (var key in moveJson) {
+								var a = 1 - n / count;  //a的值会越来越小
+								var step_dis = start[key] + dis[key] * (1 - a * a * a);
+		
+								//透明
+								if (key == 'opacity') {
+									obj.style.filter = 'alpha(opacity:' + step_dis + ')';
+									obj.style.opacity = step_dis / 100;
+								}
+								else {
+									//其他
+									obj.style[key] = step_dis + 'px';
+								}
+							};
+		
+							//取消定时器
+							if (n == count) {
+								clearInterval(obj.timer);
+								fn && fn();
+							};
+		
+						}, 30)
+					}
+					function fade(oDiv, cls) {
+		
+						var oL = oDiv.getElementsByTagName("ol")[0];
+						var oUl = oDiv.getElementsByTagName('ul')[0];
+						var aLi = oUl.children;
+		
+						var n = 0; //当前显示图片索引
+						aLi[0].style.opacity = "1";
+						aLi[0].style.filter = "alpha(opacity:100)";
+		
+						for (var i = 0; i < aLi.length; i++) {
+		
+							var oBtn = document.createElement("li");
+		
+							/* oBtn.innerHTML = i + 1;*/
+		
+							oL.appendChild(oBtn);
+						}
+						var aBtn = oL.children;
+						aBtn[0].className = cls;
+						oL.style.marginLeft = -oL.offsetWidth / 2 + "px";
+						//添加点击事件
+						for (var i = 0; i < aBtn.length; i++) {
+							aBtn[i].index = i; //发拍照
+							aBtn[i].onclick = function () {
+								if (n != this.index) {
+									slideItem(n, this.index);
+									n = this.index;
+									changeAc();
+								}
+							};
+						};
+		
+						var pBtn = oDiv.children[2];
+						var nBtn = oDiv.children[3];
+						//左右按钮动作
+						pBtn.onclick = function () {
+							if (n < 1) {
+								n = aLi.length;
+								slideItem(0, aLi.length - 1);
+							} else {
+								slideItem(n, n - 1);
+							};
+							n--;
+							changeAc();
+						};
+						nBtn.onclick = auto;
+						function auto() {
+							n++;
+							if (n > aLi.length - 1) {
+								n = 0;
+								slideItem(aLi.length - 1, 0);
+							} else {
+								slideItem(n - 1, n);
+							};
+							changeAc();
+						}
+						oDiv.timer = setInterval(auto, 2000)
+						oDiv.onmouseover = function () {
+							clearInterval(oDiv.timer)
+							animate(pBtn, { "opacity": 100 }, 800)
+							animate(nBtn, { "opacity": 100 }, 800)
+						}
+						oDiv.onmouseout = function () {
+							oDiv.timer = setInterval(auto, 2000)
+							animate(pBtn, { "opacity": 0 }, 800)
+							animate(nBtn, { "opacity": 0 }, 800)
+						}
+						function slideItem(a, b) {
+							aLi[a].style.display = 'block';
+							aLi[a].style.opacity = 1;;
+		
+							aLi[b].style.display = 'block';
+							aLi[b].style.opacity = 0;
+		
+							animate(aLi[a], { "opacity": 0 }, 1000);
+							animate(aLi[b], { "opacity": 100 }, 1000, function () {
+								aLi[a].style.display = 'none';
+							});
+						};
+		
+		
+		
+						function changeAc() {
+							for (var j = 0; j < aBtn.length; j++) {
+								aBtn[j].className = '';
+							};
+							aBtn[n].className = cls;
+						}
+		
+					}
+		
+					fade(oBanner, "ac1");
+				})
+			</script>
+	</head>
+	<body>
+		<div class="contain">
+			<div class="part1 clearfix" id="banner">
+				<ul class="clear">
+					{foreach name="img" item="vos"}
+						<li> <a href="javascript:;"> <img src="__ROOT__{$vos}" alt=""/> aa</a> </li>
+					{/foreach}
+				</ul>
+				<ol></ol>
+				<a id="prevBtn" href="javascript:;" class="moveBtn prev">&laquo;</a>
+				<a id="nextBtn" href="javascript:;" class="moveBtn next">&raquo;</a>
+			</div>
+			<div class="part2 clearfix">
+				<img src="__PUBLIC__/salrecom/img/bg1.jpg" alt=""/>
+				<div class="daojishi">
+					<span style="width: 1rem;"></span>
+					<b>:</b>
+					<span></span>
+					<b>:</b>
+					<span></span>
+					<b>:</b>
+					<span></span>
+				</div>
+			</div>
+			<div class="part3 clearfix">
+				<div class="one">
+					<span>咚咚抢</span>
+					<strong>{$row.title}</strong>
+				</div>
+				<div class="two">
+					<span class="span1">¥</span>
+					<span class="span2">{$row.money}</span>
+					<span class="span3">券后价</span>
+					<span class="span4">¥200</span>
+				</div>
+				<div class="three">
+					<span style="margin-left: 0.65rem;">天猫</span>
+					<span>新品</span>
+					<span>包邮</span>
+				</div>
+				<div class="four">
+					<img src="__PUBLIC__/salrecom/img/xiaobian.jpg" alt=""/>
+					<span class="xiaobian">小编介绍</span>
+					<span class="fabu">一小时前发布</span>
+				</div>
+				<div class="five">购买方式 :</div>
+				<div class="six">
+					长按复制微信号
+					<span>→</span>
+					添加此微信号为好友
+					<span>→</span>
+					私信客服获取链接
+				</div>
+			</div>
+			<button id="btn" class="btn part4 clearfix" data-clipboard-action="copy" data-clipboard-target="#btn">{$row.wxh}</button>
+		</div>
+		<script src="__PUBLIC__/salrecom/js/clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+				var clipboard = new ClipboardJS('.btn');
+				clipboard.on('success', function (e) {
+					alert("复制成功！");
+				});
+				clipboard.on('error', function (e) {
+					//console.log(e);
+					// $("#result").html("复制失败，请手动复制！");
+				});
+		</script>
+	</body>
+</html>

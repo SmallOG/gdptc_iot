@@ -1,0 +1,110 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+	<div class="form-group">
+		<label class="control-label col-xs-12 col-sm-2">{:__('Note')}:</label>
+		<div class="col-xs-12 col-sm-8">
+			<input data-rule="required" class="form-control" name="row[note]" type="text" value="{$row.note}">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="control-label col-xs-12 col-sm-2">页面{:__('Title')}:</label>
+		<div class="col-xs-12 col-sm-8">
+			<input data-rule="required" class="form-control" name="row[title]" type="text" value="{$row.title}">
+		</div>
+	</div>
+
+
+{foreach name="car_list" item="vos"}
+	<div class="car_parent">
+		<hr style="border-top: 1px solid #000;">
+		<div class="form-group">
+			<label class="control-label col-xs-12 col-sm-2">操作</label>
+			<div class="col-xs-12 col-sm-8">
+				<span class="btn btn-danger car_delete">删除</span>
+			</div>
+		</div>
+		<div class="form-group" style="background-color:#{$vos.color};" >
+			<label for="c-type_{$key}" class="control-label col-xs-12 col-sm-2">颜色</label>
+			<div class="col-xs-12 col-sm-8">
+				<select  id="c-type_{$key}" data-rule="required" class="form-control selectpicker car_color_select"  name="car[color][]">
+					{foreach name="colorList" item="vo"}
+					<option value="{$vo.color}" style="background-color: #{$vo.color}" {if $vo.color == $vos.color }selected{/if} >{$vo.name}</option>
+					{/foreach}
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-xs-12 col-sm-2">标题</label>
+			<div class="col-xs-12 col-sm-8">
+				<input data-rule="required" class="form-control" name="car[title][]" type="text" value="{$vos.title}">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-xs-12 col-sm-2">弹出标题</label>
+			<div class="col-xs-12 col-sm-8">
+				<input data-rule="required" class="form-control" name="car[title_r][]" type="text" value="{$vos.title_r}">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-xs-12 col-sm-2">内容</label>
+			<div class="col-xs-12 col-sm-8">
+				<input data-rule="required" class="form-control" name="car[cart][]" type="text" value="{$vos.cart}">
+			</div>
+		</div>
+		<input type="hidden" name="car[id][]" value="{$vos.id}" >
+	</div>
+{/foreach}
+
+
+
+	<div class="form-group layer-footer " id="from_footer">
+		<label class="control-label col-xs-12 col-sm-2"></label>
+		<div class="col-xs-12 col-sm-8">
+			<button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+			<button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+			<span class="btn btn-primary add_car ">添加</span>
+		</div>
+	</div>
+</form>
+
+
+<div id="hidden_car" style="display:none;">
+	<div class="car_parent">
+		<hr style="border-top: 1px solid #000;">
+		<div class="form-group">
+			<label class="control-label col-xs-12 col-sm-2">操作</label>
+			<div class="col-xs-12 col-sm-8">
+				<span class="btn btn-danger car_delete">删除</span>
+			</div>
+		</div>
+		<div class="form-group" style="background-color:#{$colorList[0]['color']};" >
+			<label for="c-type_tmp_id" class="control-label col-xs-12 col-sm-2">颜色</label>
+			<div class="col-xs-12 col-sm-8">
+				<select  id="c-type_tmp_id" class="form-control selectpicker car_color_select"  name="car[color][]">
+					{foreach name="colorList" item="vo"}
+					<option value="{$vo.color}" style="background-color: #{$vo.color}" {if $key == 1 }selected{/if} >{$vo.name}</option>
+					{/foreach}
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-xs-12 col-sm-2">标题</label>
+			<div class="col-xs-12 col-sm-8">
+				<input data-rule="required" class="form-control" name="car[title][]" type="text" value="">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-xs-12 col-sm-2">弹出标题</label>
+			<div class="col-xs-12 col-sm-8">
+				<input data-rule="required" class="form-control" name="car[title_r][]" type="text" value="">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-xs-12 col-sm-2">内容</label>
+			<div class="col-xs-12 col-sm-8">
+				<input data-rule="required" class="form-control" name="car[cart][]" type="text" value="">
+			</div>
+		</div>
+		<input type="hidden" name="car[id][]" value="0" >
+	</div>
+</div>
