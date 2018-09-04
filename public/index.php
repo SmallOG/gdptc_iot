@@ -12,14 +12,13 @@
 // [ 应用入口文件 ]
 // 定义应用目录
 
-var_dump( 'new  2018-09-04T14:02:32+0800 ' );
+
+var_dump( '2018-09-04T14:30:50+0800 aaaa' );
 exit();
 	 
 
 
 define('APP_PATH', __DIR__ . '/../application/');
-
-
 
 
 // 判断是否安装FastAdmin
