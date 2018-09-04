@@ -4,7 +4,7 @@
 # tp
 /runtime/*
 /runtime/*
-/public/uploads/*
+/public/*
 database.php
 config.php
 /db*
