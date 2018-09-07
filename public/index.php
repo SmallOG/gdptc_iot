@@ -13,26 +13,7 @@
 // 定义应用目录
 
 
-var_dump( '2018-09-04T16:30:26+0800 ooo' );
-exit();
-	 
-
-
 define('APP_PATH', __DIR__ . '/../application/');
-
-
-// 判断是否安装FastAdmin
-if (!is_file(APP_PATH . 'admin/command/Install/install.lock'))
-{
-var_dump( APP_PATH . 'admin/command/Install/install.lock' );
-exit();
-
-	var_dump( 34343 );
-	exit();
-		 
-	header("location:./install.php");
-	exit;
-}
 
 
 

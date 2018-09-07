@@ -18,6 +18,7 @@ class NginxLogs extends Backend
 		parent::_initialize();
 	}
 
+
 	/**
 	 * 查看
 	 */
