@@ -3,7 +3,8 @@
 return array (
   'name' => 'FastAdmin',
   'beian' => '',
-  'cdnurl' => 'http://zabbix-oss.oss-cn-beijing.aliyuncs.com/nginxlogs.flyskycode.com',
+  // 'cdnurl' => 'http://zabbix-oss.oss-cn-beijing.aliyuncs.com/nginxlogs.flyskycode.com',
+  'cdnurl' => '',
   'version' => '1.0.1',
   'timezone' => 'Asia/Shanghai',
   'forbiddenip' => '',

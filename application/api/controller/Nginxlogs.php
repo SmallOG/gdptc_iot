@@ -35,7 +35,8 @@ class NginxLogs extends Api
 				'N_NGINX' => ['n'=>0,'v'=>'处理nginx日志访问数'],
 			]
 		];
-	 
+
+
 		$this->threadrun   = new \ThreadRun( );
 		$this->threadrun->init( $ops );
 		$this->run();
@@ -101,14 +102,9 @@ class NginxLogs extends Api
 		unset( $original_plaintext );
 
 		$list = [];
+		$slow = [];
 		$not_send_mail = 1;
 		foreach( $arr as $v ){
-
-			/*->->->->-> 测试数据 start 2018-09-01 03:20:46------------------------------------------------------*/
-
-// $v['time'] = $v['num']*10000;
-
-/*<-<-<-<-<- 测试数据 end   -------------------------------------------------------------------------*/
 
 			if( $not_send_mail === 1 && $v['num'] > 0 && ( $v['time'] / $v['num'] ) > 1000 && !Cache::has('nginxlog_send_mail') ){
 				$this->send_mail_string = $ops['server_name'].'.'.$ops['server_ip'].'--'.var_export( $v, true );
@@ -123,9 +119,104 @@ class NginxLogs extends Api
 			}
 			if( !isset( $v['time'] ) ) $v['time'] = 0;
 			$list[ $loger_date.',,'.$host ][] = $v;
+
+
+			# ----- ----- [ 添加到慢查询 ]
+			if(  $v['num'] > 0 && ( $v['time'] / $v['num'] ) > 1000 ){
+				$slow[ $loger_date ][] = $v;
+			}
+
 		}
 
 		unset( $arr );
+		$DB_MAX_LIMIT = 2000000;
+		$DB_MAX_LIMIT = 100;
+		$DbSlow = [];
+		foreach( $slow as $dates=>$one_data ){
+
+			$par_dir = ROOT_PATH.'db/sqlite/slow/'.$dates.'/';
+
+			if( !is_dir( $par_dir ) ){
+				mkdir( $par_dir, 0777, true );
+			}
+			$db_index = 0;
+			foreach( scandir( $par_dir ) as $v  ){
+				if( substr( $v, 0, 5 ) == 'slow_' ){
+					++$db_index;
+				}
+			}
+			if( $db_index == 0 )$db_index = 1;
+
+			$db_table_name = 's_slow';
+			$keys = $dates.'_slow_'.$db_index;
+			if( empty( $DbSlow[ $keys ] ) ){
+				$DbSlow[ $keys ]['db'] = new \mySqLite3( $par_dir.'slow_'.$db_index .'.db' );
+
+				# ----- ----- [ 判断表存在就创建 ]
+				$sql = 'SELECT * FROM sqlite_master  where type="table" AND name ="'.$db_table_name.'"';
+				$ret = $DbSlow[ $keys ]['db']->queryall( $sql );	
+
+				$sql_add ='CREATE TABLE '.$db_table_name.'(
+					id integer PRIMARY KEY autoincrement,  
+					host VARCHAR ,
+					app VARCHAR ,
+					ymdhi VARCHAR,
+					server_ip VARCHAR,
+					port int,
+					time int,
+					num int
+				);
+				CREATE INDEX ymdhi_app_port_'.$db_table_name.' ON '.$db_table_name.' (ymdhi,app,port);';   
+
+				if( empty($ret) ){
+					$DbSlow[ $keys ]['db']->query( $sql_add );
+					$DbSlow[ $keys ]['count'] = 0;
+				}else{
+
+					$sql = 'SELECT count(*) co FROM '.$db_table_name.' LIMIT 1';
+					$re = $DbSlow[ $keys ]['db']->find($sql);
+					$DbSlow[ $keys ]['count'] = $re['co'];
+				}
+				if( $DbSlow[ $keys ]['count'] >= $DB_MAX_LIMIT ){
+					unset( $DbSlow[ $keys ] );
+					++$db_index;
+					$DbSlow[ $keys ]['db'] = new \mySqLite3( $par_dir.'slow_'.$db_index .'.db' );
+					$DbSlow[ $keys ]['db']->query($sql_add);
+					$DbSlow[ $keys ]['count'] = 0;
+				}
+			}
+
+			$run_db = $DbSlow[ $keys ]['db'];
+
+			$insert_ar = [];
+			foreach( $one_data as $vv){
+				unset( $vv['loger_date'] );
+				$vv['server_ip'] = $ops['server_ip'];
+				$insert_ar[] = $vv;
+			}
+
+			$sql_all_insert = 'INSERT INTO ' . $db_table_name . 
+				' ("' . implode('","', array_keys($insert_ar[0])) . '") '.'VALUES ';
+			foreach( $insert_ar as $vv ){
+				$sql_all_insert .= '("' . implode('","', $vv) . '"),';
+			}
+			$sql_all_insert = substr($sql_all_insert,0,-1).';';
+	
+
+			$res = $run_db->my_exec( $sql_all_insert );
+			if( !$res ){
+				# ----- ----- [ 未添加错误处理-数据库操作错误！ ]
+				$GLOBALS['recode_error_msg'] .= '数据库操作错误！'.var_export( $data_sql, true );
+				$this->error( '错误处理-数据库操作错误！' );
+			}
+			$DbSlow[ $keys ]['count'] += count( $insert_ar );
+				 
+			if( $DbSlow[ $keys ]['count'] >= $DB_MAX_LIMIT ){
+				unset( $DbSlow[ $keys ] );
+			}
+
+		}
+
 
 		$DbDay = [];
 		foreach( $list as $k=>$v ){
@@ -143,7 +234,6 @@ class NginxLogs extends Api
 
 			if( empty( $DbDay[ $k ] ) ){
 				$DbDay[ $k ] = new \mySqLite3( $par_dir.$host.'.db' );
-				$DbDay[ $k ]->run_date = $k;
 			}
 			$run_db = $DbDay[ $k ];
 			$is_edid_log_arr = [ 'table'=>[] ];
@@ -202,7 +292,6 @@ class NginxLogs extends Api
 				$GLOBALS['recode_error_msg'] .= '数据库操作错误！'.var_export( $data_sql, true );
 				$this->error( '错误处理-数据库操作错误！' );
 			}
-
 		}
 
 		$this->threadrun->R['IS_FINISHED'] = 1;

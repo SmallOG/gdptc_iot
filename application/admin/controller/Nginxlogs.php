@@ -22,7 +22,7 @@ class NginxLogs extends Backend
 	/**
 	 * 查看
 	 */
-	public function indexs()
+	public function index()
 	{
 
 		$sort = $this->request->request("sort",'count');
@@ -63,7 +63,7 @@ class NginxLogs extends Backend
 					'count' =>$count,
 					'host' => $host,
 				];
-				$row['url'] = url('nginxlogs/index').'?hostf='.$host.'&dates='.$dates;
+				$row['url'] = url('nginxlogs/indexs').'?hostf='.$host.'&dates='.$dates;
 				$host_ar[] = $row;
 			}
 
@@ -94,6 +94,7 @@ class NginxLogs extends Backend
 			return json($result);
 		}
 
+
 		$this->view->assign( 'dates' ,$dates );
 		return $this->view->fetch();
 	}
@@ -105,7 +106,7 @@ class NginxLogs extends Backend
 	/**
 	 * 查看
 	 */
-	public function index()
+	public function indexs()
 	{
 		$dates = $this->request->request("dates",date('Y-m-d'));
 		$sort  = $this->request->request("sort",'count');
@@ -119,6 +120,10 @@ class NginxLogs extends Backend
 		if ( $this->request->isAjax() )
 		{
 			$dir =  ROOT_PATH.'db/sqlite/day/'.$hostf.'/'.$dates.'/';
+
+			if( !is_dir( $dir ) ){
+				mkdir( $dir, 0777, true );
+			}
 
 			$arr = scandir( $dir );
 			$host_ar = [];
@@ -443,13 +448,15 @@ class NginxLogs extends Backend
 		$this->view->assign( 'table_list_time' , array_slice( $table_list_time, 0, $len, true ) );
 		
 
-
-			 
 		$dates_yesterday =  date( 'Y-m-d', strtotime( ' -1 day '.$dates ) );
 		$file =  ROOT_PATH.'db/sqlite/day/'.$hostf.'/'.$dates_yesterday.'/'.$host.'.db';
-		$sqlite_db = new \mySqLite3(  $file );
-		$sql = 'SELECT * FROM '.$table.' WHERE app="'.$app.'" AND port="'.$port.'" ';
-		$ret = $sqlite_db->queryall( $sql );
+		if( is_file( $file ) ){
+			$sqlite_db = new \mySqLite3(  $file );
+			$sql = 'SELECT * FROM '.$table.' WHERE app="'.$app.'" AND port="'.$port.'" ';
+			$ret = $sqlite_db->queryall( $sql );
+		}else{
+			$ret = [];
+		}
 
 		$table_list_num_all  = $list;
 		$table_list_time_all = $list;
@@ -487,8 +494,6 @@ class NginxLogs extends Backend
 		$this->view->assign( 'table_list_yesterday' , array_slice( $table_list_num_all, 0, $len, true ) );
 		$this->view->assign( 'table_list_time_yesterday' , array_slice( $table_list_time, 0, $len, true ) );
 
-
-
 		$this->view->assign( 'dates' ,$dates );
 		$this->view->assign( 'hostf' ,$hostf );
 		$this->view->assign( 'type_t' ,$type_t );
@@ -496,7 +501,6 @@ class NginxLogs extends Backend
 		$this->view->assign( 'table' ,$table );
 		$this->view->assign( 'app' ,$app );
 		$this->view->assign( 'port' ,$port );
-
 
 		return $this->view->fetch();
 

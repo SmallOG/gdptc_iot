@@ -1,10 +1,10 @@
 define(['jquery', 'bootstrap', 'backend', 'addtabs', 'table', 'echarts', 'echarts-theme', 'template', 'form'], function ($, undefined, Backend, Datatable, Table, Echarts, undefined, Template, Form) {
 	var Controller = {
-		indexs: function () {
+		index: function () {
 			// 初始化表格参数配置
 			Table.api.init({
 				extend: {
-					index_url: '/admin/nginxlogs/indexs',
+					index_url: '/admin/nginxlogs/index',
 					dragsort_url: '',
 					table: 'nginxlogs',
 				}
@@ -64,11 +64,11 @@ define(['jquery', 'bootstrap', 'backend', 'addtabs', 'table', 'echarts', 'echart
 			table.bootstrapTable(tableOptions);
 			Controller.api.bindevent();
 		},
-		index: function () {
+		indexs: function () {
 			// 初始化表格参数配置
 			Table.api.init({
 				extend: {
-					index_url: '/admin/nginxlogs/index',
+					index_url: '/admin/nginxlogs/indexs',
 					dragsort_url: '',
 					table: 'nginxlogs',
 				}
